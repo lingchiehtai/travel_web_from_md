@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2024-12日本楓紅多日行程</title>
+
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+<style>
+body{
+  font-family: sans-serif;
+}
+
+body {
+  background-image: url('background.jpg');
+  background-size: cover;
+  background-attachment: fixed;
+  background-position: center; 
+}
+
+h1{
+  font-size: 2em;
+}
+
+.top-menu {
+  background-color: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  padding: 10px;
+  margin: 10px auto;
+  max-width: 900px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.top-menu button{
+  margin:5px;
+}
+
+.search-container {
+  margin-left: auto;
+}
+
+.day-menu{
+  display:flex;
+  overflow-x:auto;
+}
+
+.day-menu button{
+  margin:5px;
+  flex:0 0 auto;
+}
+
+#content {
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 12px;
+  padding: 20px;
+  margin: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>2024-12日本楓紅多日行程</h1>
+
+<div class="top-menu">
+<button id="show-itinerary-btn">行程</button>
+<button id="show-accommodation-btn">住宿</button>
+<button>其他資訊</button>
+<div class="search-container" style="display: flex; gap: 5px;"></div>
+  <input type="text" id="search-input" placeholder="輸入關鍵字 (例如: 抹茶, 咖啡)..." style="padding: 8px; font-size: 16px;">
+  <button id="search-btn" style="padding: 8px;">搜尋</button>
+</div>
+</div>
+
+<hr>
+
+<div class="day-menu"></div>
+
+<div id="content"></div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
