@@ -1,17 +1,44 @@
 // Global object to store markdown content for each day
 const tripDataByDay = {};
 
+// Global variable to store search results HTML
+let lastSearchResultsHtml = null;
+
 /**
  * Loads the content for a specific day into the content area.
  * @param {string} dayId - The identifier for the day (e.g., 'day1').
+ * @param {boolean} fromSearch - Whether coming from search results
  */
-function loadDay(dayId) {
+function loadDay(dayId, fromSearch = false) {
     const contentDiv = document.getElementById('content');
     const markdownForDay = tripDataByDay[dayId];
 
     if (markdownForDay) {
         // Use the marked library to convert markdown to HTML
-        contentDiv.innerHTML = marked.parse(markdownForDay);
+        let dayContent = marked.parse(markdownForDay);
+        
+        // If coming from search results, add a back button
+        if (fromSearch && lastSearchResultsHtml) {
+            dayContent = `<button id="back-to-search-btn" style="padding: 8px 16px; margin-bottom: 16px; font-size: 14px; font-weight: 500; border: 1.5px solid #D4C5B9; border-radius: 6px; background-color: white; color: #A64253; cursor: pointer;">← 回到搜尋結果</button>` + dayContent;
+        }
+        
+        contentDiv.innerHTML = dayContent;
+        
+        // Add event listener to the back button
+        const backBtn = document.getElementById('back-to-search-btn');
+        if (backBtn) {
+            backBtn.addEventListener('click', () => {
+                contentDiv.innerHTML = lastSearchResultsHtml;
+                // Re-attach click listeners to search results
+                const resultItems = contentDiv.querySelectorAll('li[data-day-id]');
+                resultItems.forEach(item => {
+                    item.addEventListener('click', () => {
+                        loadDay(item.dataset.dayId, true);
+                    });
+                });
+            });
+        }
+        
         // Save the currently viewed day to localStorage
         localStorage.setItem('lastViewedDay', dayId);
     } else {
@@ -32,6 +59,11 @@ function showAccommodations() {
     document.querySelector('.day-menu').style.display = 'none';
     document.getElementById('show-itinerary-btn').classList.remove('active');
     document.getElementById('show-accommodation-btn').classList.add('active');
+    document.getElementById('show-other-info-btn').classList.remove('active');
+    
+    // Hide the search panel and show content
+    document.getElementById('search-panel').style.display = 'none';
+    document.getElementById('content').style.display = 'block';
 
     const contentDiv = document.getElementById('content');
     let accommodationListHtml = '<h2>住宿總覽</h2><table><thead><tr><th>天數</th><th>日期</th><th>住宿</th></tr></thead><tbody>';
@@ -76,6 +108,8 @@ function showAccommodations() {
             const row = event.target.closest('tr');
             // Ensure the click is on a row with a day ID and not the header
             if (row && row.dataset.dayId) {
+                // Clear search results when navigating from accommodation view
+                lastSearchResultsHtml = null;
                 showItineraryView(row.dataset.dayId);
             }
         });
@@ -96,6 +130,7 @@ function performSearch() {
 
     // Manage view visibility
     document.querySelector('.day-menu').style.display = 'none';
+    document.getElementById('search-panel').style.display = 'block';
     document.querySelectorAll('.top-menu button').forEach(btn => btn.classList.remove('active'));
 
     const contentDiv = document.getElementById('content');
@@ -137,24 +172,47 @@ function performSearch() {
 
     resultsHtml += '</ul>';
     contentDiv.innerHTML = resultsHtml;
+    contentDiv.style.display = 'block';
+    
+    // Save the search results HTML for later
+    lastSearchResultsHtml = resultsHtml;
 
     // Add click listeners to results to jump to the itinerary
     const resultItems = contentDiv.querySelectorAll('li[data-day-id]');
     resultItems.forEach(item => {
         item.addEventListener('click', () => {
-            showItineraryView(item.dataset.dayId);
+            loadDay(item.dataset.dayId, true);
         });
     });
 }
 
 /**
- * Switches the view back to the day-by-day itinerary.
+ * Shows the search panel in the "Other Info" view.
  */
+function showOtherInfo() {
+    // Manage view visibility and active buttons
+    document.querySelector('.day-menu').style.display = 'none';
+    document.getElementById('show-itinerary-btn').classList.remove('active');
+    document.getElementById('show-accommodation-btn').classList.remove('active');
+    document.getElementById('show-other-info-btn').classList.add('active');
+
+    // Show the search panel
+    document.getElementById('search-panel').style.display = 'block';
+
+    const contentDiv = document.getElementById('content');
+    contentDiv.style.display = 'none';
+    contentDiv.innerHTML = '';
+}
 function showItineraryView(dayIdToLoad = null) {
     // Manage view visibility and active buttons
     document.querySelector('.day-menu').style.display = 'flex';
     document.getElementById('show-accommodation-btn').classList.remove('active');
+    document.getElementById('show-other-info-btn').classList.remove('active');
     document.getElementById('show-itinerary-btn').classList.add('active');
+    
+    // Hide the search panel and show content
+    document.getElementById('search-panel').style.display = 'none';
+    document.getElementById('content').style.display = 'block';
 
     // Load the relevant day's content
     let dayToLoad = dayIdToLoad;
@@ -208,7 +266,11 @@ async function initializeTrip() {
                 const button = document.createElement('button');
                 button.textContent = `Day ${dayNumber}`;
                 button.id = dayId; // Assign an ID for easy selection later
-                button.onclick = () => loadDay(dayId);
+                button.onclick = () => {
+                    // Clear search results when clicking from day menu
+                    lastSearchResultsHtml = null;
+                    loadDay(dayId);
+                };
                 dayMenu.appendChild(button);
             }
         });
@@ -224,30 +286,50 @@ async function initializeTrip() {
 
 // Add a style for the active button to give visual feedback
 const style = document.createElement('style');
-style.textContent = ` .day-menu button.active, .top-menu button.active {
-        background-color: #007bff;
+style.textContent = ` 
+    .day-menu button.active, .top-menu button.active {
+        background: linear-gradient(135deg, #A64253 0%, #8B3A3A 100%);
         color: white;
-        border-color: #007bff;
+        border-color: #D4AF37;
+        box-shadow: 0 4px 12px rgba(166, 66, 83, 0.35);
     }
+    
+    #search-panel:not([style*="display: none"]) + #content {
+        border-radius: 0 0 8px 8px;
+        margin-top: 0;
+    }
+    
+    #content {
+        border-radius: 8px;
+        margin-top: 16px;
+    }
+    
     table {
         width: 100%;
         border-collapse: collapse;
         margin-top: 10px;
     }
+    
     th, td {
-        border: 1px solid #ddd;
-        padding: 8px;
+        border: 1px solid #D4C5B9;
+        padding: 12px;
         text-align: left;
     }
+    
     th {
-        background-color: #f2f2f2;
+        background: linear-gradient(135deg, #A64253 0%, #8B3A3A 100%);
+        color: white;
+        font-weight: 600;
     }
+    
     tr:nth-child(even) {
-        background-color: #f9f9f9;
+        background-color: #FEF6F3;
     }
+    
     tbody tr:hover {
-        background-color: #e9e9e9;
+        background-color: #F5E6E0;
         cursor: pointer;
+        box-shadow: inset 0 0 0 1px #D4AF37;
     }
 `;
 document.head.appendChild(style);
@@ -258,6 +340,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Attach listeners to the main navigation buttons
     document.getElementById('show-itinerary-btn').addEventListener('click', () => showItineraryView());
     document.getElementById('show-accommodation-btn').addEventListener('click', showAccommodations);
+    document.getElementById('show-other-info-btn').addEventListener('click', showOtherInfo);
     
     // Attach listeners for search
     document.getElementById('search-btn').addEventListener('click', performSearch);

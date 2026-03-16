@@ -8,8 +8,20 @@
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
 <style>
+:root {
+  --primary-color: #A64253;
+  --primary-dark: #8B3A3A;
+  --accent-gold: #D4AF37;
+  --accent-light-gold: #E8D4A8;
+  --bg-light: #FEF6F3;
+  --bg-dark: #2C2C2C;
+  --border-color: #D4C5B9;
+  --hover-bg: #F5E6E0;
+}
+
 body{
-  font-family: sans-serif;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: var(--bg-dark);
 }
 
 body {
@@ -20,45 +32,158 @@ body {
 }
 
 h1{
-  font-size: 2em;
+  font-size: 2.2em;
+  color: var(--primary-dark);
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+h2 {
+  color: var(--primary-color);
+  border-bottom: 2px solid var(--accent-gold);
+  padding-bottom: 8px;
 }
 
 .top-menu {
-  background-color: rgba(255, 255, 255, 0.95);
-  border-radius: 12px;
-  padding: 10px;
-  margin: 10px auto;
+  background-color: rgba(255, 255, 255, 0.97);
+  border-radius: 8px;
+  padding: 16px;
+  margin: 16px auto;
   max-width: 900px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(166, 66, 83, 0.12);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 .top-menu button{
-  margin:5px;
+  margin: 4px;
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: 500;
+  border: 1.5px solid var(--border-color);
+  border-radius: 6px;
+  background-color: white;
+  color: var(--primary-color);
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-.search-container {
-  margin-left: auto;
+.top-menu button:hover {
+  background-color: var(--accent-light-gold);
+  border-color: var(--accent-gold);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(166, 66, 83, 0.15);
 }
 
-.day-menu{
-  display:flex;
-  overflow-x:auto;
+.top-menu button:active {
+  transform: translateY(0);
 }
 
-.day-menu button{
-  margin:5px;
-  flex:0 0 auto;
-}
-
-#content {
-  background-color: rgba(255, 255, 255, 0.9);
-  border-radius: 12px;
-  padding: 20px;
-  margin: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+#search-panel {
+  background-color: rgba(255, 255, 255, 0.97);
+  border-radius: 8px;
+  padding: 24px;
+  margin: 16px 10px;
   max-width: 900px;
   margin-left: auto;
   margin-right: auto;
+  box-shadow: 0 4px 12px rgba(166, 66, 83, 0.12);
+}
+
+#search-panel h2 {
+  margin-left: 0;
+}
+
+.search-container {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-start;
+  margin-left: 0;
+}
+
+#content {
+  background-color: rgba(255, 255, 255, 0.98);
+  border-radius: 8px;
+  padding: 28px;
+  margin: 16px 10px;
+  box-shadow: 0 6px 16px rgba(166, 66, 83, 0.14);
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+  border-top: none;
+}
+
+#search-panel + #content {
+  border-radius: 8px;
+  margin-top: 16px;
+}
+
+.search-container input {
+  padding: 10px 14px;
+  font-size: 14px;
+  border: 1.5px solid var(--border-color);
+  border-radius: 6px;
+  background-color: var(--bg-light);
+  color: var(--bg-dark);
+}
+
+.search-container input:focus {
+  outline: none;
+  border-color: var(--accent-gold);
+  background-color: white;
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+}
+
+.search-container button {
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  border: none;
+  border-radius: 6px;
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 6px rgba(166, 66, 83, 0.25);
+}
+
+.search-container button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(166, 66, 83, 0.35);
+}
+
+.day-menu{
+  display: flex;
+  overflow-x: auto;
+  gap: 8px;
+  padding: 12px;
+  background-color: rgba(255, 255, 255, 0.97);
+  margin: 0 10px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(166, 66, 83, 0.08);
+}
+
+.day-menu button{
+  margin: 0;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  border: 1.5px solid var(--border-color);
+  border-radius: 6px;
+  background-color: white;
+  color: var(--primary-color);
+  cursor: pointer;
+  flex:0 0 auto;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.day-menu button:hover {
+  background-color: var(--accent-light-gold);
+  border-color: var(--accent-gold);
+  transform: translateY(-2px);
 }
 
 </style>
@@ -72,11 +197,16 @@ h1{
 <div class="top-menu">
 <button id="show-itinerary-btn">行程</button>
 <button id="show-accommodation-btn">住宿</button>
-<button>其他資訊</button>
-<div class="search-container" style="display: flex; gap: 5px;"></div>
-  <input type="text" id="search-input" placeholder="輸入關鍵字 (例如: 抹茶, 咖啡)..." style="padding: 8px; font-size: 16px;">
-  <button id="search-btn" style="padding: 8px;">搜尋</button>
+<button id="show-other-info-btn">其他資訊</button>
 </div>
+
+<div id="search-panel" style="display: none;">
+  <h2 style="border: none; padding-bottom: 0; margin: 0 0 12px 0; color: var(--primary-color);">搜尋行程內容</h2>
+  <p style="margin: 0 0 16px 0; color: #666; font-size: 0.95em;">在下方輸入關鍵字進行搜尋，例如：抹茶、咖啡、寺廟等。</p>
+  <div class="search-container">
+    <input type="text" id="search-input" placeholder="輸入關鍵字 (例如: 抹茶, 咖啡)..." style="padding: 8px; font-size: 16px;">
+    <button id="search-btn" style="padding: 8px;">搜尋</button>
+  </div>
 </div>
 
 <hr>
